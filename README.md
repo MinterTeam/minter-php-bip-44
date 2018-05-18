@@ -1,0 +1,1 @@
+# minter-php-bip-44
