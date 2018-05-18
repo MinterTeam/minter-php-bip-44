@@ -40,7 +40,7 @@ class Helper
     }
 
     /**
-     * Encode to base56
+     * Encode to base58
      *
      * @param $hex
      * @return string
