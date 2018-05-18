@@ -145,7 +145,7 @@ class HDKey
     public function deriveChild($index): HDKey
     {
         $isHardened = $index >= self::HARDENED_OFFSET;
-        $indexHex = dechex($index);
+        $indexHex = str_repeat('0', 8 - strlen(dechex($index))) . dechex($index);
 
         $data = $this->prepareDataString($isHardened, $indexHex);
         list($IL, $IR) = $this->hmac($data, $this->chainCode);
@@ -217,7 +217,7 @@ class HDKey
             return $this->privateKeyWithNulls($this->data['privateKey']) . $index;
         }
 
-        return $this->data['publicKey'] . ($index === '0' ? $index . str_repeat('0', 8 - strlen($index)) : $index);
+        return $this->data['publicKey'] . $index;
     }
 
     /**
