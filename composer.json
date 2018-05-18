@@ -1,0 +1,18 @@
+{
+  "name": "minter/minter-php-bip-44",
+  "autoload": {
+    "psr-0" : {
+      "BIP\\" : "src"
+    }
+  },
+  "require": {
+    "php": "^7.1.3",
+    "simplito/elliptic-php": "^1.0",
+    "bitwasp/bitcoin-lib": "^1.0.4"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require-dev": {
+    "phpunit/phpunit": "^7"
+  }
+}
