@@ -25,7 +25,7 @@ use BIP\BIP44;
 
 $seed = 'a95e6ca6908e9d6051479c0083e62d2dd3067878091455d52fef322032bf888ebaa6482a343b8c6b2e6d051c3a1701228358d27af550e65a858ce612c4713933';
 
-$HDKey = BIP44::fromMasterSeed($seed)->deriveChild("m/44'/60'/0'/0/0");
+$HDKey = BIP44::fromMasterSeed($seed)->derive("m/44'/60'/0'/0/0");
 
 echo $HDKey->privateKey; // 2e1c993e0b05e1facc80d405fba18c9fa263d89e4caffe342417c40c7c46742f
 ```
@@ -37,7 +37,7 @@ use BIP\BIP44;
 
 $seed = 'a95e6ca6908e9d6051479c0083e62d2dd3067878091455d52fef322032bf888ebaa6482a343b8c6b2e6d051c3a1701228358d27af550e65a858ce612c4713933';
 
-$HDKey = BIP44::fromMasterSeed($seed)->deriveChild("m/44'/60'/0'/0");
+$HDKey = BIP44::fromMasterSeed($seed)->derive("m/44'/60'/0'/0");
 
 echo $HDKey->getPublicExtendedKey(); // xpub6Dnoiy4pCzyjYYan4SNvbnKH9pZNHvHKWrMGWD6RnZ7SC4RA57S1csNfYXbCywk27x4cGdwdYFr2cRwa3fGfG9nDV2z7B5njAFNshjzeA2n
 
