@@ -139,13 +139,13 @@ class HDKey
     /**
      * Derive child key by index
      *
-     * @param $index
+     * @param int $index
      * @return HDKey
      */
-    public function deriveChild($index): HDKey
+    public function deriveChild(int $index): HDKey
     {
         $isHardened = $index >= self::HARDENED_OFFSET;
-        $indexHex = str_repeat('0', 8 - strlen(dechex($index))) . dechex($index);
+        $indexHex = $this->convertIndexToHex($index);
 
         $data = $this->prepareDataString($isHardened, $indexHex);
         list($IL, $IR) = $this->hmac($data, $this->chainCode);
@@ -230,10 +230,10 @@ class HDKey
     {
         $data = [
             dechex($version),
-            $this->data['fingerprint'],
-            Helper::hex_encode($this->data->depth),
+            Helper::hex_encode($this->data['depth']),
+            Helper::hex_encode(intval($this->data['fingerprint']) !== 0 ? $this->data['parentFingerprint'] : $this->data['fingerprint']),
+            $this->convertIndexToHex($this->data['index']),
             $this->data['chainCode'],
-            $this->data['index'],
             ($version === self::BITCOIN_VERSIONS['private'] ? $this->privateKeyWithNulls($this->data['privateKey']) : $this->data['publicKey'])
         ];
 
@@ -285,6 +285,7 @@ class HDKey
     protected function computeFingerprint(string $publicKey)
     {
         $identifier = Helper::hash160($publicKey);
+
         return Helper::hex_decode(substr($identifier, 0, 8));
     }
 
@@ -303,5 +304,17 @@ class HDKey
         }
 
         return true;
+    }
+
+    /**
+     * Prepare index to hex
+     *
+     * @param int $index
+     * @return string
+     */
+    protected function convertIndexToHex(int $index): string
+    {
+        $indexHex = dechex($index);
+        return str_repeat('0', 8 - strlen($indexHex)) . $indexHex;
     }
 }

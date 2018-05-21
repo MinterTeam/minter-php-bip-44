@@ -28,6 +28,24 @@ final class BIP44Test extends TestCase
     ];
 
     /**
+     * Valid extended keys ([public, private])
+     */
+    const VALID_EXTENDED_KEYS = [
+        [
+            'xpub6Eg5ahu5DUJXTKoMstLF1nK5Zc9svBoiYoVEsLaFGBoCof9ToPLZ1cNC2i7N6QJDiRtWPoXRf732tAi8t33xTFQpYQMa2TxoUYQU6njDXxu', // public
+            'xprvA1gjBCNBP6kEEqitmroEeeNM1aKPWj5sBaZe4xAdhrGDvrpKFr2JTp3iBSUhrcWuWRWZEZ5Yb7ogc9oA5vKmPgmw221fhAh8P9oiPjfpHKF'  // private
+        ],
+        [
+            'xpub6F8LvRvGvddDyU8Gp2uR9RS5rzMYetoVMHQLHASst1Ks8bradQtg4At5WgphvQKCNxeqGyroirxsQmsiy3wCM49caHyewP9DM7ojtykVz7Q', // public
+            'xprvA28zWvPP6G4vkz3oi1NQnHVMJxX4FS5dz4UjUn3GKfntFoXS5saRWNZbfRudXZiBevcsoB7geFD91TW1E2PJ69XfLfQhD8uXzaMrmzgx8ga'  // private
+        ],
+        [
+            'xpub6FHuZgayTKXouaG1m5PSdeGnWtnKgJ4qVYC5GbnKNePsnRPAqvhtS34qEWSJEpi6xYhDGN9fPiaKRZhR3nhgspyniVRSXPAf3gDnsub5Gjg', // public
+            'xprvA2JZAB45cwyWh6BYf3rSGWL3xrwqGqLz8KGUUDNhpJrtud42JPPdtEkMPDdwzxDUh8DbqPS1pVrf2tc1BRTqT5YZqA14uL85sHbm5BSCBqN'  // private
+        ]
+    ];
+
+    /**
      * Test that correct private key generated from seed
      */
     public function testComputingPrivateKeyFromSeed()
@@ -35,6 +53,10 @@ final class BIP44Test extends TestCase
         foreach(self::VALID_SEED as $key => $seed) {
             $HDKey = BIP44::fromMasterSeed($seed)->derive("m/44'/60'/0'/0/0");
             $this->assertEquals(self::VALID_PRIVATE_KEYS[$key], $HDKey->privateKey);
+
+            $HDKey = BIP44::fromMasterSeed($seed)->derive("m/44'/60'/0'/0");
+            $this->assertEquals(self::VALID_EXTENDED_KEYS[$key][0], $HDKey->getPublicExtendedKey());
+            $this->assertEquals(self::VALID_EXTENDED_KEYS[$key][1], $HDKey->getPrivateExtendedKey());
         }
     }
 }
