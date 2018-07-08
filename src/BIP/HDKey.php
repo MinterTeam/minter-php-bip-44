@@ -180,7 +180,7 @@ class HDKey
             throw new \Exception('Invalid private key');
         }
 
-        $this->data['privateKey'] = $privateKey;
+        $this->data['privateKey'] = str_repeat('0', 64 - strlen($privateKey)) . $privateKey;
         $this->data['publicKey'] = $this->getPublicKeyFromPrivate($privateKey);
         $this->data['fingerprint'] = $this->computeFingerprint($this->data['publicKey']);
     }
