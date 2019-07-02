@@ -139,10 +139,10 @@ class HDKey
     /**
      * Derive child key by index
      *
-     * @param int $index
+     * @param $index
      * @return HDKey
      */
-    public function deriveChild(int $index): HDKey
+    public function deriveChild($index): HDKey
     {
         $isHardened = $index >= self::HARDENED_OFFSET;
         $indexHex = $this->convertIndexToHex($index);
@@ -309,10 +309,10 @@ class HDKey
     /**
      * Prepare index to hex
      *
-     * @param int $index
+     * @param $index
      * @return string
      */
-    protected function convertIndexToHex(int $index): string
+    protected function convertIndexToHex($index): string
     {
         $indexHex = dechex($index);
         return str_repeat('0', 8 - strlen($indexHex)) . $indexHex;
