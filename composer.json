@@ -1,5 +1,5 @@
 {
-  "name": "NanQi/php-bip-44",
+  "name": "nanqi/php-bip-44",
   "autoload": {
     "psr-0" : {
       "BIP\\" : "src"
