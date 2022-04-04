@@ -5,6 +5,7 @@ namespace BIP;
 use Elliptic\EC;
 use BIP\Library\Helper;
 use BIP\Library\KeyPair;
+use BIP\Library\Keccak;
 
 class HDKey
 {
@@ -21,7 +22,8 @@ class HDKey
         'publicKey' => null,
         'chainCode' => null,
         'fingerprint' => '00000000',
-        'parentFingerprint' => '00000000'
+        'parentFingerprint' => '00000000',
+        'address' => null
     ];
 
     /**
@@ -183,6 +185,18 @@ class HDKey
         $this->data['privateKey'] = str_repeat('0', 64 - strlen($privateKey)) . $privateKey;
         $this->data['publicKey'] = $this->getPublicKeyFromPrivate($privateKey);
         $this->data['fingerprint'] = $this->computeFingerprint($this->data['publicKey']);
+
+        $this->ellipticCurve = new EC('secp256k1');
+        $keyPair = new KeyPair($this->ellipticCurve, [
+            'priv' => $privateKey,
+            'privEnc' => 'hex'
+        ]);
+
+        $pub = $keyPair->getPublic(false,"hex");
+        $pub = substr($pub,2);
+        $hash = Keccak::hash(hex2bin($pub), 256);
+        $address = substr($hash,-40);
+        $this->data['address'] = "0x".$address;
     }
 
     /**
