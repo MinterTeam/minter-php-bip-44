@@ -226,12 +226,17 @@ class HDKey
      * @param $version
      * @return string
      */
-    protected function encode($version)
+    protected function encode($version): string
     {
+        $fingerprint = intval($this->data['fingerprint']) !== 0
+            ? $this->data['parentFingerprint']
+            : $this->data['fingerprint'];
+        $fingerprintHex = Helper::hex_encode($fingerprint);
+
         $data = [
             dechex($version),
             Helper::hex_encode($this->data['depth']),
-            Helper::hex_encode(intval($this->data['fingerprint']) !== 0 ? $this->data['parentFingerprint'] : $this->data['fingerprint']),
+            $this->zeroLeftPad($fingerprintHex, 8),
             $this->convertIndexToHex($this->data['index']),
             $this->data['chainCode'],
             ($version === self::BITCOIN_VERSIONS['private'] ? $this->privateKeyWithNulls($this->data['privateKey']) : $this->data['publicKey'])
@@ -282,7 +287,7 @@ class HDKey
      * @param string $publicKey
      * @return string
      */
-    protected function computeFingerprint(string $publicKey)
+    protected function computeFingerprint(string $publicKey): string
     {
         $identifier = Helper::hash160($publicKey);
 
@@ -315,6 +320,11 @@ class HDKey
     protected function convertIndexToHex(int $index): string
     {
         $indexHex = dechex($index);
-        return str_repeat('0', 8 - strlen($indexHex)) . $indexHex;
+        return $this->zeroLeftPad($indexHex, 8);
+    }
+
+    protected function zeroLeftPad(string $hex, int $length): string
+    {
+        return str_pad($hex, $length, '0', STR_PAD_LEFT);
     }
 }
