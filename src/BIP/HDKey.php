@@ -19,6 +19,7 @@ class HDKey
         'index' => '00000000',
         'privateKey' => null,
         'publicKey' => null,
+        'publicKeyUncompressed' => null,
         'chainCode' => null,
         'fingerprint' => '00000000',
         'parentFingerprint' => '00000000'
@@ -182,6 +183,7 @@ class HDKey
 
         $this->data['privateKey'] = str_repeat('0', 64 - strlen($privateKey)) . $privateKey;
         $this->data['publicKey'] = $this->getPublicKeyFromPrivate($privateKey);
+        $this->data['publicKeyUncompressed'] = $this->getPublicKeyFromPrivate($privateKey, false);
         $this->data['fingerprint'] = $this->computeFingerprint($this->data['publicKey']);
     }
 
@@ -191,7 +193,7 @@ class HDKey
      * @param string $privateKey
      * @return string
      */
-    protected function getPublicKeyFromPrivate(string $privateKey): string
+    protected function getPublicKeyFromPrivate(string $privateKey, bool $shouldCompress = true): string
     {
         $this->ellipticCurve = new EC('secp256k1');
         $keyPair = new KeyPair($this->ellipticCurve, [
@@ -199,7 +201,7 @@ class HDKey
             'privEnc' => 'hex'
         ]);
 
-        return $keyPair->getPublic(true, 'hex');
+        return $keyPair->getPublic($shouldCompress, 'hex');
     }
 
     /**
