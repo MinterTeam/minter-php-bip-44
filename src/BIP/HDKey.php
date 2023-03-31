@@ -19,6 +19,7 @@ class HDKey
         'index' => '00000000',
         'privateKey' => null,
         'publicKey' => null,
+        'publicKeyUncompressed' => null,
         'chainCode' => null,
         'fingerprint' => '00000000',
         'parentFingerprint' => '00000000'
@@ -182,6 +183,7 @@ class HDKey
 
         $this->data['privateKey'] = str_repeat('0', 64 - strlen($privateKey)) . $privateKey;
         $this->data['publicKey'] = $this->getPublicKeyFromPrivate($privateKey);
+        $this->data['publicKeyUncompressed'] = $this->getPublicKeyFromPrivate($privateKey, false);
         $this->data['fingerprint'] = $this->computeFingerprint($this->data['publicKey']);
     }
 
@@ -191,7 +193,7 @@ class HDKey
      * @param string $privateKey
      * @return string
      */
-    protected function getPublicKeyFromPrivate(string $privateKey): string
+    protected function getPublicKeyFromPrivate(string $privateKey, bool $shouldCompress = true): string
     {
         $this->ellipticCurve = new EC('secp256k1');
         $keyPair = new KeyPair($this->ellipticCurve, [
@@ -199,7 +201,7 @@ class HDKey
             'privEnc' => 'hex'
         ]);
 
-        return $keyPair->getPublic(true, 'hex');
+        return $keyPair->getPublic($shouldCompress, 'hex');
     }
 
     /**
@@ -226,12 +228,17 @@ class HDKey
      * @param $version
      * @return string
      */
-    protected function encode($version)
+    protected function encode($version): string
     {
+        $fingerprint = intval($this->data['fingerprint']) !== 0
+            ? $this->data['parentFingerprint']
+            : $this->data['fingerprint'];
+        $fingerprintHex = Helper::hex_encode($fingerprint);
+
         $data = [
             dechex($version),
             Helper::hex_encode($this->data['depth']),
-            Helper::hex_encode(intval($this->data['fingerprint']) !== 0 ? $this->data['parentFingerprint'] : $this->data['fingerprint']),
+            $this->zeroLeftPad($fingerprintHex, 8),
             $this->convertIndexToHex($this->data['index']),
             $this->data['chainCode'],
             ($version === self::BITCOIN_VERSIONS['private'] ? $this->privateKeyWithNulls($this->data['privateKey']) : $this->data['publicKey'])
@@ -282,7 +289,7 @@ class HDKey
      * @param string $publicKey
      * @return string
      */
-    protected function computeFingerprint(string $publicKey)
+    protected function computeFingerprint(string $publicKey): string
     {
         $identifier = Helper::hash160($publicKey);
 
@@ -315,6 +322,11 @@ class HDKey
     protected function convertIndexToHex(int $index): string
     {
         $indexHex = dechex($index);
-        return str_repeat('0', 8 - strlen($indexHex)) . $indexHex;
+        return $this->zeroLeftPad($indexHex, 8);
+    }
+
+    protected function zeroLeftPad(string $hex, int $length): string
+    {
+        return str_pad($hex, $length, '0', STR_PAD_LEFT);
     }
 }
