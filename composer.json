@@ -7,7 +7,7 @@
   },
   "require": {
     "php": "^7.1.3|^8.0",
-    "simplito/elliptic-php": "1.0.6"
+    "simplito/elliptic-php": "^1.0.6"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
